@@ -38,7 +38,7 @@ class KeyItem {
 
 /// 실제 키를 생성하는 헬퍼 함수
 KeyItem key(String txt, int flex, Color txtColor, Color bgColor) {
-  return KeyItem(txt: txt, flex: flex, txtColor: txtColor, bgColor: bgColor);
+  return KeyItem(txt: txt, flex: flex, txtColor: txtColor, bgColor: bgColor, isSpace: false);
 }
 
 /// 여백을 생성하는 헬퍼 함수
