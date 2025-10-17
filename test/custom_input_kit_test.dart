@@ -154,7 +154,7 @@ void main() {
     test('hide() 호출 시 비활성화', () {
       controller.show(InputType.keyboard);
       expect(controller.isActive, true);
-      
+
       controller.hide();
       expect(controller.isActive, false);
     });
@@ -168,7 +168,7 @@ void main() {
       final initialTheme = controller.isUseDarkTheme;
       controller.setIsUseDarkTheme(!initialTheme);
       expect(controller.isUseDarkTheme, !initialTheme);
-      
+
       // 원래대로 복원
       controller.setIsUseDarkTheme(initialTheme);
     });
@@ -176,7 +176,7 @@ void main() {
     test('keyboardFlex 변경', () {
       controller.setKeyboardFlex(5);
       expect(controller.keyboardFlex, 5);
-      
+
       // 기본값으로 복원
       controller.setKeyboardFlex(4);
     });
@@ -184,22 +184,22 @@ void main() {
     test('showWithResult()는 Future 반환', () async {
       final future = controller.showWithResult(InputType.keyboard);
       expect(controller.isActive, true);
-      
+
       // 값 설정 후 완료
       controller.setValue('결과값');
       final result = await future;
-      
+
       expect(result, '결과값');
     });
 
     test('showWithResult() 취소 시 null 반환', () async {
       final future = controller.showWithResult(InputType.keyboard);
       expect(controller.isActive, true);
-      
+
       // 취소
       controller.hide();
       final result = await future;
-      
+
       expect(result, null);
     });
   });

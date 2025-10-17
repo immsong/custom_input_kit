@@ -1,5 +1,5 @@
 /// 한글 자모 조합 및 분해를 처리하는 유틸리티
-/// 
+///
 /// 키보드 입력(자모)을 완성형 한글로 조합하거나,
 /// 완성형 한글을 다시 자모로 분해합니다.
 class TextParser {
@@ -109,11 +109,11 @@ class TextParser {
   }
 
   /// 초성, 중성, 종성을 조합하여 완성형 한글을 생성합니다.
-  /// 
+  ///
   /// [first]: 초성 (예: 'ㄱ')
   /// [second]: 중성 (예: 'ㅏ')
   /// [third]: 종성 (선택사항)
-  /// 
+  ///
   /// 반환: 조합된 한글 (예: '가', '각')
   static String? compose(String first, String second, [String? third]) {
     final firstIndex = firstList.indexOf(first);
@@ -142,12 +142,12 @@ class TextParser {
   }
 
   /// 자모 배열을 완성형 한글로 조합합니다.
-  /// 
+  ///
   /// 키보드 입력처럼 순차적으로 입력된 자모를 완성형 한글로 변환합니다.
   /// 복합 모음, 겹받침 등을 자동으로 처리합니다.
-  /// 
+  ///
   /// [chars]: 자모 배열 (예: ['ㅎ', 'ㅏ', 'ㄴ', 'ㄱ', 'ㅡ', 'ㄹ'])
-  /// 
+  ///
   /// 반환: 조합된 문자열 (예: "한글")
   static String parse(List<String> chars) {
     if (chars.isEmpty) return '';
@@ -240,39 +240,39 @@ class TextParser {
   }
 
   /// 완성형 한글 여부를 확인합니다.
-  /// 
+  ///
   /// [char]: 확인할 문자
-  /// 
+  ///
   /// 반환: 완성형 한글이면 true ('가' ~ '힣')
   static bool isCompleteKorean(String char) {
     if (char.isEmpty) return false;
     final code = char.codeUnitAt(0);
-    return code >= 0xAC00 && code <= 0xD7AF;  // '가' ~ '힣'
+    return code >= 0xAC00 && code <= 0xD7AF; // '가' ~ '힣'
   }
-  
+
   /// 완성형 한글을 초성, 중성, 종성으로 분해합니다.
-  /// 
+  ///
   /// [char]: 분해할 완성형 한글 (예: '한')
-  /// 
+  ///
   /// 반환: (초성, 중성, 종성) 튜플 (예: ('ㅎ', 'ㅏ', 'ㄴ'))
   static (String, String, String?) decompose(String char) {
     final code = char.codeUnitAt(0) - 0xAC00;
-    
+
     final firstIndex = code ~/ 588;
     final secondIndex = (code % 588) ~/ 28;
     final thirdIndex = code % 28;
-    
+
     final first = firstList[firstIndex];
     final second = secondList[secondIndex];
     final third = thirdIndex == 0 ? null : thirdList[thirdIndex];
-    
+
     return (first, second, third);
   }
-  
+
   /// 겹받침을 기본 자음으로 분해합니다.
-  /// 
+  ///
   /// [consonant]: 겹받침 (예: 'ㄺ')
-  /// 
+  ///
   /// 반환: 분해된 자음 리스트 (예: ['ㄹ', 'ㄱ']) 또는 null
   static List<String>? splitDoubleConsonant(String consonant) {
     for (final entry in doubleVowelMap.entries) {
@@ -284,11 +284,11 @@ class TextParser {
     }
     return null;
   }
-  
+
   /// 복합 모음을 기본 모음으로 분해합니다.
-  /// 
+  ///
   /// [vowel]: 복합 모음 (예: 'ㅘ')
-  /// 
+  ///
   /// 반환: 분해된 모음 리스트 (예: ['ㅗ', 'ㅏ']) 또는 null
   static List<String>? splitComplexVowel(String vowel) {
     for (final entry in complexVowelMap.entries) {
@@ -300,28 +300,28 @@ class TextParser {
     }
     return null;
   }
-  
+
   /// 완성형 한글 문자열을 자모 배열로 분해합니다 (역변환).
-  /// 
+  ///
   /// 키보드 편집 모드에서 사용됩니다.
   /// 완성형 한글을 자모로 분해하고, 복합 모음과 겹받침도 기본 자모로 분해합니다.
-  /// 
+  ///
   /// [text]: 분해할 문자열 (예: "한글")
-  /// 
+  ///
   /// 반환: 자모 배열 (예: ['ㅎ', 'ㅏ', 'ㄴ', 'ㄱ', 'ㅡ', 'ㄹ'])
   static List<String> toCharList(String text) {
     List<String> result = [];
-    
+
     for (int i = 0; i < text.length; i++) {
       final char = text[i];
-      
+
       // 완성형 한글인 경우 분해
       if (isCompleteKorean(char)) {
         final (first, second, third) = decompose(char);
-        
+
         // 초성
         result.add(first);
-        
+
         // 중성 (복합 모음 분해)
         final splitVowel = splitComplexVowel(second);
         if (splitVowel != null) {
@@ -329,7 +329,7 @@ class TextParser {
         } else {
           result.add(second);
         }
-        
+
         // 종성 (겹받침 분해)
         if (third != null) {
           final splitConsonant = splitDoubleConsonant(third);
@@ -344,7 +344,7 @@ class TextParser {
         result.add(char);
       }
     }
-    
+
     return result;
   }
 }
