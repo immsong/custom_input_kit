@@ -406,17 +406,15 @@ class _KeyboardWidgetState extends State<KeyboardWidget> {
   /// 키 입력 처리 완료 후 초기화
   void _cleanUpKeyInput() {
     setState(() {
-      _pressedKey = '';
-
-      if (_keyboardType == KeyboardType.korShift) {
-        _keyboardType = KeyboardType.kor;
-      } else if (_keyboardType == KeyboardType.engShift) {
-        _keyboardType = KeyboardType.eng;
-      } else if (_keyboardType == KeyboardType.number) {
-        _keyboardType = KeyboardType.number;
-      } else if (_keyboardType == KeyboardType.symbol) {
-        _keyboardType = KeyboardType.symbol;
+      if (_pressedKey != '↑') {
+        if (_keyboardType == KeyboardType.korShift) {
+          _keyboardType = KeyboardType.kor;
+        } else if (_keyboardType == KeyboardType.engShift) {
+          _keyboardType = KeyboardType.eng;
+        }
       }
+
+      _pressedKey = '';
     });
   }
 
