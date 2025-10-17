@@ -287,33 +287,12 @@ class _KeyboardWidgetState extends State<KeyboardWidget> {
     return Row(children: [...keys.map((key) => _buildKey(key))]);
   }
 
-  /// 개별 키를 반환하고 이벤트를 처리합니다.
-  Widget _buildKey(KeyItem key) {
-    return Expanded(
-      flex: key.flex,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final size = constraints.maxHeight;
-          return GestureDetector(
-            onTapDown: (_) {
-              setState(() {
-                _pressedKey = key.txt;
-              });
-            },
-            onTapCancel: () {
-              setState(() {
-                _pressedKey = '';
-              });
-            },
-            onTapUp: (_) {
+  /// 키 입력 처리
+  void _handleKeyPress(KeyItem key) {
               // 여백(spacer)이면 아무 동작 안 함
               if (key.isSpace) {
                 return;
               }
-
-              setState(() {
-                _pressedKey = '';
-              });
 
               // Shift 키: 키보드 타입 전환 (소문자 <-> 대문자, 자음/모음 <-> 쌍자음/복모음, 숫자 <-> 기호)
               if (key.txt == '↑') {
@@ -417,6 +396,49 @@ class _KeyboardWidgetState extends State<KeyboardWidget> {
               setState(() {
                 _inputText = TextParser.parse(_inputChars);
               });
+  }
+
+  /// 키 입력 처리 완료 후 초기화
+  void _cleanUpKeyInput() {
+    setState(() {
+      _pressedKey = '';
+    });
+  }
+
+  /// 개별 키를 반환하고 이벤트를 처리합니다.
+  Widget _buildKey(KeyItem key) {
+    return Expanded(
+      flex: key.flex,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final size = constraints.maxHeight;
+          return GestureDetector(
+            onTapDown: (_) {
+              setState(() {
+                _pressedKey = key.txt;
+              });
+
+              // 장시간 눌렀을 때 연속 입력 처리, 500ms 이상 눌렀을 때 연속 입력 처리
+              _longPressTimer = Timer.periodic(Duration(milliseconds: 500), (
+                timer,
+              ) {
+                _longPressTimer!.cancel();
+                // 연속 입력 처리, 50ms마다 입력 처리
+                _longPressTimer = Timer.periodic(Duration(milliseconds: 50), (
+                  timer,
+                ) {
+                  _handleKeyPress(key);
+                });
+              });
+            },
+            onTapCancel: () {
+              _longPressTimer?.cancel();
+              _cleanUpKeyInput();
+            },
+            onTapUp: (_) {
+              _longPressTimer?.cancel();
+              _handleKeyPress(key);
+              _cleanUpKeyInput();
             },
             child: Container(
               height: double.infinity,
