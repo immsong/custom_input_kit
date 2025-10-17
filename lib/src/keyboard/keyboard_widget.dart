@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:custom_input_kit/src/controller/custom_input_controller.dart';
 import 'package:flutter/material.dart';
 
@@ -35,6 +37,31 @@ class _KeyboardWidgetState extends State<KeyboardWidget> {
   /// 현재 눌린 키 (눌림 상태 표시를 위함)
   String _pressedKey = '';
 
+  /// 커서 깜박임 타이머
+  Timer? _cursorTimer;
+
+  /// 커서 표시 여부
+  bool _showCursor = true;
+
+  /// 키보드 키 오래 눌렀을 때 연속 입력 처리
+  Timer? _longPressTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _cursorTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+      setState(() {
+        _showCursor = !_showCursor;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _cursorTimer?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -42,22 +69,34 @@ class _KeyboardWidgetState extends State<KeyboardWidget> {
         // 입력 텍스트 표시 영역
         Expanded(
           child: Container(
-            padding: EdgeInsets.only(left: 10, right: 10),
+            padding: EdgeInsets.all(10),
             width: double.infinity,
             decoration: BoxDecoration(
               color: CustomInputController.instance.isUseDarkTheme
                   ? Colors.grey[800]
-                  : Colors.grey[200],
+                  : Colors.grey[400],
             ),
-            child: FittedBox(
-              fit: BoxFit.contain,
-              child: Text(
-                _inputText,
-                style: TextStyle(
-                  color: CustomInputController.instance.isUseDarkTheme
-                      ? Colors.white
-                      : Colors.black,
-                ),
+            child: Container(
+              padding: EdgeInsets.only(left: 10),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.keyboard, color: Colors.black),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: FittedBox(
+                      alignment: Alignment.centerLeft,
+                      fit: BoxFit.contain,
+                      child: Text(
+                        _showCursor ? '$_inputText|' : '$_inputText ',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -253,6 +292,134 @@ class _KeyboardWidgetState extends State<KeyboardWidget> {
     return Row(children: [...keys.map((key) => _buildKey(key))]);
   }
 
+  /// 키 입력 처리
+  void _handleKeyPress(KeyItem key) {
+    // 여백(spacer)이면 아무 동작 안 함
+    if (key.isSpace) {
+      return;
+    }
+
+    // Shift 키: 키보드 타입 전환 (소문자 <-> 대문자, 자음/모음 <-> 쌍자음/복모음, 숫자 <-> 기호)
+    if (key.txt == '↑') {
+      setState(() {
+        if (_keyboardType == KeyboardType.kor) {
+          _keyboardType = KeyboardType.korShift;
+        } else if (_keyboardType == KeyboardType.korShift) {
+          _keyboardType = KeyboardType.kor;
+        } else if (_keyboardType == KeyboardType.eng) {
+          _keyboardType = KeyboardType.engShift;
+        } else if (_keyboardType == KeyboardType.engShift) {
+          _keyboardType = KeyboardType.eng;
+        } else if (_keyboardType == KeyboardType.number) {
+          _keyboardType = KeyboardType.symbol;
+        } else if (_keyboardType == KeyboardType.symbol) {
+          _keyboardType = KeyboardType.number;
+        }
+      });
+
+      return;
+    }
+
+    // 한/영 전환 키
+    if (key.txt == '⇄') {
+      setState(() {
+        if (_keyboardType == KeyboardType.kor) {
+          _keyboardType = KeyboardType.eng;
+        } else if (_keyboardType == KeyboardType.korShift) {
+          _keyboardType = KeyboardType.engShift;
+        } else if (_keyboardType == KeyboardType.eng) {
+          _keyboardType = KeyboardType.kor;
+        } else if (_keyboardType == KeyboardType.engShift) {
+          _keyboardType = KeyboardType.korShift;
+        }
+      });
+
+      return;
+    }
+
+    // 문자/숫자 전환 키
+    if (key.txt == 'A/1') {
+      setState(() {
+        if (_keyboardType == KeyboardType.kor) {
+          _keyboardType = KeyboardType.number;
+        } else if (_keyboardType == KeyboardType.korShift) {
+          _keyboardType = KeyboardType.symbol;
+        } else if (_keyboardType == KeyboardType.eng) {
+          _keyboardType = KeyboardType.number;
+        } else if (_keyboardType == KeyboardType.engShift) {
+          _keyboardType = KeyboardType.symbol;
+        } else if (_keyboardType == KeyboardType.number) {
+          _keyboardType = KeyboardType.eng;
+        } else if (_keyboardType == KeyboardType.symbol) {
+          _keyboardType = KeyboardType.engShift;
+        }
+      });
+
+      return;
+    }
+
+    // 테마 토글 키 (다크/라이트 모드)
+    if (key.txt == '◗') {
+      setState(() {
+        CustomInputController.instance.setIsUseDarkTheme(
+          !CustomInputController.instance.isUseDarkTheme,
+        );
+      });
+      return;
+    }
+
+    // 엔터 키: 입력 완료 및 키보드 닫기
+    if (key.txt == '↵') {
+      final controller = CustomInputController.instance;
+      controller.setValue(_inputText);
+      controller.hide();
+      return;
+    }
+
+    // 스페이스바 키
+    if (key.txt == 'space') {
+      setState(() {
+        _inputChars.add(' ');
+      });
+    }
+    // 백스페이스 키
+    else if (key.txt == '←') {
+      if (_inputChars.isNotEmpty) {
+        setState(() {
+          _inputChars.removeLast();
+        });
+      }
+    }
+    // 일반 문자 입력
+    else {
+      setState(() {
+        _inputChars.add(key.txt);
+      });
+    }
+
+    // 키 배열을 완성형 문자로 조합
+    setState(() {
+      _inputText = TextParser.parse(_inputChars);
+    });
+  }
+
+  /// 키 입력 처리 완료 후 초기화
+  void _cleanUpKeyInput() {
+    setState(() {
+      _pressedKey = '';
+
+      if (_keyboardType == KeyboardType.korShift) {
+        _keyboardType = KeyboardType.kor;
+      } else if (_keyboardType == KeyboardType.engShift) {
+        _keyboardType = KeyboardType.eng;
+      } else if (_keyboardType == KeyboardType.number) {
+        _keyboardType = KeyboardType.number;
+      } else if (_keyboardType == KeyboardType.symbol) {
+        _keyboardType = KeyboardType.symbol;
+      }
+    });
+  }
+
   /// 개별 키를 반환하고 이벤트를 처리합니다.
   Widget _buildKey(KeyItem key) {
     return Expanded(
@@ -265,124 +432,28 @@ class _KeyboardWidgetState extends State<KeyboardWidget> {
               setState(() {
                 _pressedKey = key.txt;
               });
+
+              // 장시간 눌렀을 때 연속 입력 처리, 500ms 이상 눌렀을 때 연속 입력 처리
+              _longPressTimer = Timer.periodic(Duration(milliseconds: 500), (
+                timer,
+              ) {
+                _longPressTimer!.cancel();
+                // 연속 입력 처리, 50ms마다 입력 처리
+                _longPressTimer = Timer.periodic(Duration(milliseconds: 50), (
+                  timer,
+                ) {
+                  _handleKeyPress(key);
+                });
+              });
             },
             onTapCancel: () {
-              setState(() {
-                _pressedKey = '';
-              });
+              _longPressTimer?.cancel();
+              _cleanUpKeyInput();
             },
             onTapUp: (_) {
-              // 여백(spacer)이면 아무 동작 안 함
-              if (key.isSpace) {
-                return;
-              }
-
-              setState(() {
-                _pressedKey = '';
-              });
-
-              // Shift 키: 키보드 타입 전환 (소문자 <-> 대문자, 자음/모음 <-> 쌍자음/복모음, 숫자 <-> 기호)
-              if (key.txt == '↑') {
-                setState(() {
-                  if (_keyboardType == KeyboardType.kor) {
-                    _keyboardType = KeyboardType.korShift;
-                  } else if (_keyboardType == KeyboardType.korShift) {
-                    _keyboardType = KeyboardType.kor;
-                  } else if (_keyboardType == KeyboardType.eng) {
-                    _keyboardType = KeyboardType.engShift;
-                  } else if (_keyboardType == KeyboardType.engShift) {
-                    _keyboardType = KeyboardType.eng;
-                  } else if (_keyboardType == KeyboardType.number) {
-                    _keyboardType = KeyboardType.symbol;
-                  } else if (_keyboardType == KeyboardType.symbol) {
-                    _keyboardType = KeyboardType.number;
-                  }
-                });
-
-                return;
-              }
-
-              // 한/영 전환 키
-              if (key.txt == '⇄') {
-                setState(() {
-                  if (_keyboardType == KeyboardType.kor) {
-                    _keyboardType = KeyboardType.eng;
-                  } else if (_keyboardType == KeyboardType.korShift) {
-                    _keyboardType = KeyboardType.engShift;
-                  } else if (_keyboardType == KeyboardType.eng) {
-                    _keyboardType = KeyboardType.kor;
-                  } else if (_keyboardType == KeyboardType.engShift) {
-                    _keyboardType = KeyboardType.korShift;
-                  }
-                });
-
-                return;
-              }
-
-              // 문자/숫자 전환 키
-              if (key.txt == 'A/1') {
-                setState(() {
-                  if (_keyboardType == KeyboardType.kor) {
-                    _keyboardType = KeyboardType.number;
-                  } else if (_keyboardType == KeyboardType.korShift) {
-                    _keyboardType = KeyboardType.symbol;
-                  } else if (_keyboardType == KeyboardType.eng) {
-                    _keyboardType = KeyboardType.number;
-                  } else if (_keyboardType == KeyboardType.engShift) {
-                    _keyboardType = KeyboardType.symbol;
-                  } else if (_keyboardType == KeyboardType.number) {
-                    _keyboardType = KeyboardType.eng;
-                  } else if (_keyboardType == KeyboardType.symbol) {
-                    _keyboardType = KeyboardType.engShift;
-                  }
-                });
-
-                return;
-              }
-
-              // 테마 토글 키 (다크/라이트 모드)
-              if (key.txt == '◗') {
-                setState(() {
-                  CustomInputController.instance.setIsUseDarkTheme(
-                    !CustomInputController.instance.isUseDarkTheme,
-                  );
-                });
-                return;
-              }
-
-              // 엔터 키: 입력 완료 및 키보드 닫기
-              if (key.txt == '↵') {
-                final controller = CustomInputController.instance;
-                controller.setValue(_inputText);
-                controller.hide();
-                return;
-              }
-
-              // 스페이스바 키
-              if (key.txt == 'space') {
-                setState(() {
-                  _inputChars.add(' ');
-                });
-              }
-              // 백스페이스 키
-              else if (key.txt == '←') {
-                if (_inputChars.isNotEmpty) {
-                  setState(() {
-                    _inputChars.removeLast();
-                  });
-                }
-              }
-              // 일반 문자 입력
-              else {
-                setState(() {
-                  _inputChars.add(key.txt);
-                });
-              }
-
-              // 키 배열을 완성형 문자로 조합
-              setState(() {
-                _inputText = TextParser.parse(_inputChars);
-              });
+              _longPressTimer?.cancel();
+              _handleKeyPress(key);
+              _cleanUpKeyInput();
             },
             child: Container(
               height: double.infinity,

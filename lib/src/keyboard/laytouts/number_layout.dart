@@ -62,8 +62,12 @@ class NumberLayout {
   static List<KeyItem> getRow3(Color keyColor, Color bgColor) {
     return [
       spacer(4),
-      key('↑', 76, keyColor, bgColor),
-      spacer(23),
+      key('↑', 62, keyColor, bgColor),
+      spacer(11),
+      key('`', 62, keyColor, bgColor),
+      spacer(11),
+      key('~', 62, keyColor, bgColor),
+      spacer(11),
       key(',', 62, keyColor, bgColor),
       spacer(11),
       key('<', 62, keyColor, bgColor),
@@ -75,8 +79,8 @@ class NumberLayout {
       key('/', 62, keyColor, bgColor),
       spacer(11),
       key('?', 62, keyColor, bgColor),
-      spacer(23),
-      key('←', 76, keyColor, bgColor),
+      spacer(11),
+      key('←', 62, keyColor, bgColor),
       spacer(4),
     ];
   }
