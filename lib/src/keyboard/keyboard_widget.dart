@@ -35,6 +35,28 @@ class _KeyboardWidgetState extends State<KeyboardWidget> {
   /// 현재 눌린 키 (눌림 상태 표시를 위함)
   String _pressedKey = '';
 
+  /// 커서 깜박임 타이머
+  Timer? _cursorTimer;
+
+  /// 커서 표시 여부
+  bool _showCursor = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _cursorTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+      setState(() {
+        _showCursor = !_showCursor;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _cursorTimer?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -64,7 +86,7 @@ class _KeyboardWidgetState extends State<KeyboardWidget> {
                       alignment: Alignment.centerLeft,
               fit: BoxFit.contain,
               child: Text(
-                _inputText,
+                        _showCursor ? '$_inputText|' : '$_inputText ',
                         style: TextStyle(color: Colors.black),
                       ),
                     ),
