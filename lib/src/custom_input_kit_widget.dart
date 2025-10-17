@@ -5,10 +5,10 @@ import 'package:custom_input_kit/src/keyboard/keyboard_widget.dart';
 import 'package:custom_input_kit/src/models/input_type.dart';
 
 /// Custom Input Kit의 메인 위젯
-/// 
+///
 /// 화면 전체를 오버레이하여 입력 위젯을 표시합니다.
 /// CustomInputController의 상태 변화를 리스닝하여 자동으로 표시/숨김 처리됩니다.
-/// 
+///
 /// 사용 방법:
 /// ```dart
 /// MaterialApp(
@@ -80,8 +80,8 @@ class _CustomInputKitWidgetState extends State<CustomInputKitWidget> {
     switch (type) {
       case InputType.keyboard:
         return KeyboardWidget();
-      default:
-        return const SizedBox.shrink();
+      // default:
+      //   return const SizedBox.shrink();
     }
   }
 }

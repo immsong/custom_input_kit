@@ -1,8 +1,8 @@
 name: custom_input_kit
 description: A customizable Flutter input widget package with Korean/English keyboard, calendar, date/time picker, and number input support.
 version: 0.1.0
-repository: https://github.com/immsong/custom_input_kit
 homepage: https://github.com/immsong/custom_input_kit
+repository: https://github.com/immsong/custom_input_kit
 
 environment:
   sdk: ">=3.0.0 <4.0.0"

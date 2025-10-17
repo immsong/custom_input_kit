@@ -8,15 +8,15 @@ class CommonLayout {
   static List<KeyItem> getRow(Color keyColor, Color bgColor) {
     return [
       spacer(4),
-      key('◗', 65, keyColor, bgColor),       // 테마 토글
+      key('◗', 65, keyColor, bgColor), // 테마 토글
       spacer(11),
-      key('A/1', 65, keyColor, bgColor),     // 문자/숫자 전환
+      key('A/1', 65, keyColor, bgColor), // 문자/숫자 전환
       spacer(11),
-      key('space', 350, keyColor, bgColor),  // 스페이스 바
+      key('space', 350, keyColor, bgColor), // 스페이스 바
       spacer(11),
-      key('⇄', 50, keyColor, bgColor),       // 한글/영문 전환
+      key('⇄', 50, keyColor, bgColor), // 한글/영문 전환
       spacer(11),
-      key('↵', 80, keyColor, bgColor),       // 엔터 (확인)
+      key('↵', 80, keyColor, bgColor), // 엔터 (확인)
       spacer(4),
     ];
   }
