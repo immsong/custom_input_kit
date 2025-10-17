@@ -42,22 +42,34 @@ class _KeyboardWidgetState extends State<KeyboardWidget> {
         // 입력 텍스트 표시 영역
         Expanded(
           child: Container(
-            padding: EdgeInsets.only(left: 10, right: 10),
+            padding: EdgeInsets.all(10),
             width: double.infinity,
             decoration: BoxDecoration(
               color: CustomInputController.instance.isUseDarkTheme
                   ? Colors.grey[800]
-                  : Colors.grey[200],
+                  : Colors.grey[400],
             ),
+            child: Container(
+              padding: EdgeInsets.only(left: 10),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.keyboard, color: Colors.black),
+                  SizedBox(width: 10),
+                  Expanded(
             child: FittedBox(
+                      alignment: Alignment.centerLeft,
               fit: BoxFit.contain,
               child: Text(
                 _inputText,
-                style: TextStyle(
-                  color: CustomInputController.instance.isUseDarkTheme
-                      ? Colors.white
-                      : Colors.black,
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
                 ),
+                ],
               ),
             ),
           ),
