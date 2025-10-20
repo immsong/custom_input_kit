@@ -32,17 +32,47 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String _inputText = 'please tap to open keyboard';
+  String _keyboardInputText = 'please tap to open keyboard';
+  String _integerInputText = 'please tap to open integer number';
+  String _floatInputText = 'please tap to open float number';
 
-  void _onTap() {
+  void _onKeyboardTap() {
     final result = CustomInputController.instance.showWithResult(
       InputType.keyboard,
-      initialText: _inputText,
+      initialText: _keyboardInputText,
     );
     result.then((value) {
       if (value is String) {
         setState(() {
-          _inputText = value;
+          _keyboardInputText = value;
+        });
+      }
+    });
+  }
+
+  void _onIntegerTap() {
+    final result = CustomInputController.instance.showWithResult(
+      InputType.integer,
+      initialText: _integerInputText,
+    );
+    result.then((value) {
+      if (value is String) {
+        setState(() {
+          _integerInputText = value;
+        });
+      }
+    });
+  }
+
+  void _onFloatTap() {
+    final result = CustomInputController.instance.showWithResult(
+      InputType.float,
+      initialText: _floatInputText,
+    );
+    result.then((value) {
+      if (value is String) {
+        setState(() {
+          _floatInputText = value;
         });
       }
     });
@@ -62,14 +92,56 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: [
                   Expanded(
                     child: GestureDetector(
-                      onTap: _onTap,
+                      onTap: _onKeyboardTap,
                       child: Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(color: Colors.black),
                         ),
-                        child: Text(_inputText),
+                        child: Text(_keyboardInputText),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Row(children: [Text("integer input")]),
+            SizedBox(
+              height: 50,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: _onIntegerTap,
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.black),
+                        ),
+                        child: Text(_integerInputText),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Row(children: [Text("float input")]),
+            SizedBox(
+              height: 50,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: _onFloatTap,
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.black),
+                        ),
+                        child: Text(_floatInputText),
                       ),
                     ),
                   ),
