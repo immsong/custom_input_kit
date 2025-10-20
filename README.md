@@ -4,13 +4,18 @@ A Flutter package for customizable input widgets with Korean/English keyboard su
 
 ## Features
 
-Custom keyboard widget with Korean/English input, automatic jamo composition, theme support, and cross-platform compatibility. Coming soon: date/time pickers and number input.
+Custom keyboard widget with Korean/English input, automatic jamo composition, theme support, and cross-platform compatibility. Number input (integer/float) support included. Coming soon: date/time pickers.
 
 ## Screenshots
 
 ### Keyboard Usage
-<!-- TODO: Add screenshot/gif -->
 ![Keyboard Usage](https://raw.githubusercontent.com/immsong/custom_input_kit/main/doc/images/keyboard_use.gif)
+
+### Integer Usage
+![Integer Usage](https://raw.githubusercontent.com/immsong/custom_input_kit/main/doc/images/integer_use.gif)
+
+### Float Usage
+![Float Usage](https://raw.githubusercontent.com/immsong/custom_input_kit/main/doc/images/float_use.gif)
 
 ## Installation
 
@@ -18,7 +23,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  custom_input_kit: ^0.1.0
+  custom_input_kit: ^0.2.0
 ```
 
 ## Usage
@@ -129,6 +134,16 @@ controller.show(InputType.keyboard, initialText: 'Edit me');
 // Show keyboard and get result
 final result = await controller.showWithResult(InputType.keyboard);
 
+// Show integer input
+controller.show(InputType.integer);
+
+// Show float input  
+controller.show(InputType.float);
+
+// Show with initial values
+controller.show(InputType.integer, initialText: '123');
+controller.show(InputType.float, initialText: '12.34');
+
 // Hide keyboard
 controller.hide();
 
@@ -158,13 +173,12 @@ controller.setKeyboardFlex(5);       // Height ratio (1-10, default: 4, full scr
 - Tap keys to input, long press to repeat
 - Tap outside to dismiss keyboard
 
-
 ## Roadmap
 
-- [v] Custom keyboard (Korean, English, Numbers)
+- [x] Custom keyboard (Korean, English, Numbers)
 - [ ] Calendar date picker
 - [ ] Date/time picker
-- [ ] Number input (integer/decimal)
+- [x] Number input (integer/decimal)
 - [ ] More customization options
 
 ## Examples
