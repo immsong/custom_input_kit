@@ -44,20 +44,20 @@ class CustomInputController extends ChangeNotifier {
   int _keyboardFlex = 4;
   int get keyboardFlex => _keyboardFlex;
 
-  /// 키보드 초기 텍스트 (편집 모드에서 사용)
-  String _initialText = "";
-  String get initialText => _initialText;
+  /// 입력 위젯 초기 값
+  Object? _initialValue;
+  Object? get initialValue => _initialValue;
 
   /// 입력 위젯을 표시합니다.
   ///
   /// [type]: 표시할 입력 타입
-  /// [initialText]: 키보드의 초기 텍스트 (선택사항)
+  /// [initialValue]: 입력 위젯의 초기 값 (선택사항)
   ///
   /// 결과값이 필요하지 않을 때 사용합니다.
-  void show(InputType type, {String initialText = ""}) {
+  void show(InputType type, {Object? initialValue}) {
     _type = type;
     _isActive = true;
-    _initialText = initialText;
+    _initialValue = initialValue;
     notifyListeners();
   }
 
@@ -69,10 +69,10 @@ class CustomInputController extends ChangeNotifier {
   /// 반환값: 사용자가 입력한 값 (취소 시 null)
   ///
   /// 사용자가 입력을 완료하거나 취소할 때까지 대기합니다.
-  Future<Object?> showWithResult(InputType type, {String initialText = ""}) {
+  Future<Object?> showWithResult(InputType type, {Object? initialValue}) {
     _type = type;
     _isActive = true;
-    _initialText = initialText;
+    _initialValue = initialValue;
     _completer = Completer<Object?>();
     notifyListeners();
     return _completer!.future;

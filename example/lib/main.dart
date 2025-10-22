@@ -39,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onKeyboardTap() {
     final result = CustomInputController.instance.showWithResult(
       InputType.keyboard,
-      initialText: _keyboardInputText,
+      initialValue: _keyboardInputText,
     );
     result.then((value) {
       if (value is String) {
@@ -53,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onIntegerTap() {
     final result = CustomInputController.instance.showWithResult(
       InputType.integer,
-      initialText: _integerInputText,
+      initialValue: _integerInputText,
     );
     result.then((value) {
       if (value is String) {
@@ -67,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onFloatTap() {
     final result = CustomInputController.instance.showWithResult(
       InputType.float,
-      initialText: _floatInputText,
+      initialValue: _floatInputText,
     );
     result.then((value) {
       if (value is String) {
