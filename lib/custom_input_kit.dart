@@ -10,3 +10,4 @@ library;
 export 'src/custom_input_kit_widget.dart';
 export 'src/controller/custom_input_controller.dart';
 export 'src/models/input_type.dart';
+export 'src/calendar/utils/calendar_helper.dart';
