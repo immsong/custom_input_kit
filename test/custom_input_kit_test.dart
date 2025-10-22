@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:custom_input_kit/src/keyboard/utils/text_parser.dart';
+import 'package:custom_input_kit/src/number/utils/number_parser.dart';
+import 'package:custom_input_kit/src/calendar/utils/calendar_helper.dart';
 import 'package:custom_input_kit/src/controller/custom_input_controller.dart';
 import 'package:custom_input_kit/src/models/input_type.dart';
 
@@ -120,6 +122,122 @@ void main() {
     });
   });
 
+  group('NumberParser - 숫자 유효성 검증', () {
+    test('일반 숫자 입력', () {
+      expect(NumberParser.parse(['1', '2', '3']), ['1', '2', '3']);
+      expect(NumberParser.parse(['9', '9', '9']), ['9', '9', '9']);
+    });
+
+    test('소수점 입력', () {
+      expect(NumberParser.parse(['1', '.', '5']), ['1', '.', '5']);
+      expect(NumberParser.parse(['0', '.', '5']), ['0', '.', '5']);
+    });
+
+    test('소수점 중복 방지', () {
+      expect(
+          NumberParser.parse(['1', '.', '2', '.', '3']), ['1', '.', '2', '3']);
+      expect(NumberParser.parse(['.', '.', '5']), ['0', '.', '5']);
+    });
+
+    test('맨 앞 소수점 보정', () {
+      expect(NumberParser.parse(['.', '5']), ['0', '.', '5']);
+      expect(NumberParser.parse(['.', '9', '9']), ['0', '.', '9', '9']);
+    });
+
+    test('선행 0 제거', () {
+      expect(NumberParser.parse(['0', '1']), ['1']);
+      expect(NumberParser.parse(['0', '5']), ['5']);
+      expect(NumberParser.parse(['0', '0', '1']), ['1']);
+    });
+
+    test('0.xx 형태는 허용', () {
+      expect(NumberParser.parse(['0', '.', '5']), ['0', '.', '5']);
+      expect(NumberParser.parse(['0', '.', '0', '1']), ['0', '.', '0', '1']);
+    });
+
+    test('단독 0 허용', () {
+      expect(NumberParser.parse(['0']), ['0']);
+    });
+
+    test('빈 입력', () {
+      expect(NumberParser.parse([]), []);
+    });
+
+    test('숫자가 아닌 문자 무시', () {
+      expect(NumberParser.parse(['1', 'a', '2']), ['1', '2']);
+      expect(NumberParser.parse(['x', 'y', 'z']), ['0']);
+    });
+
+    test('소수점만 있는 경우', () {
+      expect(NumberParser.parse(['.']), ['0']);
+    });
+  });
+
+  group('CalendarHelper - 날짜 계산', () {
+    test('첫 요일 계산', () {
+      // 2024년 1월 1일은 월요일
+      expect(CalendarHelper.getFirstWeekday(2024, 1), 1);
+      // 2024년 2월 1일은 목요일
+      expect(CalendarHelper.getFirstWeekday(2024, 2), 4);
+    });
+
+    test('마지막 날짜 계산', () {
+      expect(CalendarHelper.getLastDay(2024, 1), 31); // 1월
+      expect(CalendarHelper.getLastDay(2024, 2), 29); // 2월 (윤년)
+      expect(CalendarHelper.getLastDay(2023, 2), 28); // 2월 (평년)
+      expect(CalendarHelper.getLastDay(2024, 4), 30); // 4월
+    });
+
+    test('월 정보 반환', () {
+      final info = CalendarHelper.getMonthInfo(2024, 1);
+      expect(info['firstWeekday'], 1);
+      expect(info['lastDay'], 31);
+    });
+
+    test('월 이름 변환', () {
+      expect(CalendarHelper.getMonthNameShort(1), 'JAN');
+      expect(CalendarHelper.getMonthNameShort(6), 'JUN');
+      expect(CalendarHelper.getMonthNameShort(12), 'DEC');
+    });
+
+    test('잘못된 월 입력', () {
+      expect(CalendarHelper.getMonthNameShort(0), 'N/A');
+      expect(CalendarHelper.getMonthNameShort(13), 'N/A');
+    });
+
+    test('요일 이름 변환', () {
+      expect(CalendarHelper.getWeekdayName(1), 'Mon');
+      expect(CalendarHelper.getWeekdayName(6), 'Sat');
+      expect(CalendarHelper.getWeekdayName(7), 'Sun');
+    });
+
+    test('잘못된 요일 입력', () {
+      expect(CalendarHelper.getWeekdayName(0), 'N/A');
+      expect(CalendarHelper.getWeekdayName(8), 'N/A');
+    });
+
+    test('DateTime to String 변환', () {
+      final date = DateTime(2024, 1, 5);
+      expect(CalendarHelper.dateTimeToString(date), '2024-01-05');
+
+      final date2 = DateTime(2024, 12, 31);
+      expect(CalendarHelper.dateTimeToString(date2), '2024-12-31');
+    });
+
+    test('String to DateTime 변환', () {
+      final date = CalendarHelper.stringToDateTime('2024-01-05');
+      expect(date.year, 2024);
+      expect(date.month, 1);
+      expect(date.day, 5);
+    });
+
+    test('잘못된 문자열 파싱 시 현재 날짜 반환', () {
+      final result = CalendarHelper.stringToDateTime('invalid');
+      expect(result, isA<DateTime>());
+      // 현재 날짜가 반환되므로 DateTime 타입만 확인
+    });
+  });
+
   group('CustomInputController', () {
     late CustomInputController controller;
 
@@ -145,10 +263,30 @@ void main() {
       expect(controller.type, InputType.keyboard);
     });
 
-    test('show()에 initialText 전달', () {
-      controller.show(InputType.keyboard, initialText: '테스트');
+    test('show()에 initialValue 전달', () {
+      controller.show(InputType.keyboard, initialValue: '테스트');
       expect(controller.isActive, true);
-      expect(controller.initialText, '테스트');
+      expect(controller.initialValue, '테스트');
+    });
+
+    test('다양한 InputType 지원', () {
+      controller.show(InputType.keyboard);
+      expect(controller.type, InputType.keyboard);
+
+      controller.show(InputType.integer);
+      expect(controller.type, InputType.integer);
+
+      controller.show(InputType.float);
+      expect(controller.type, InputType.float);
+
+      controller.show(InputType.calendar);
+      expect(controller.type, InputType.calendar);
+    });
+
+    test('DateTime을 initialValue로 전달', () {
+      final date = DateTime(2024, 1, 5);
+      controller.show(InputType.calendar, initialValue: date);
+      expect(controller.initialValue, date);
     });
 
     test('hide() 호출 시 비활성화', () {
