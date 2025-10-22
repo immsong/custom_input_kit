@@ -21,11 +21,10 @@ class NumberWidget extends StatefulWidget {
 
 class _NumberWidgetState extends State<NumberWidget> {
   /// 입력된 키 배열
-  final List<String> _inputChars =
-      CustomInputController.instance.initialText.split('');
+  final List<String> _inputChars = [];
 
   /// 조합된 최종 텍스트
-  String _inputText = CustomInputController.instance.initialText;
+  String _inputText = '';
 
   /// 현재 눌린 키 (눌림 상태 표시를 위함)
   String _pressedKey = '';
@@ -44,6 +43,13 @@ class _NumberWidgetState extends State<NumberWidget> {
         _showCursor = !_showCursor;
       });
     });
+
+    if (CustomInputController.instance.initialValue is String) {
+      String initialValue =
+          CustomInputController.instance.initialValue as String;
+      _inputChars.addAll(initialValue.split(''));
+      _inputText = initialValue;
+    }
 
     if (double.tryParse(_inputText) == null) {
       _inputText = '0';

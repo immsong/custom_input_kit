@@ -35,11 +35,26 @@ class _MyHomePageState extends State<MyHomePage> {
   String _keyboardInputText = 'please tap to open keyboard';
   String _integerInputText = 'please tap to open integer number';
   String _floatInputText = 'please tap to open float number';
+  String _calendarInputText = 'please tap to open calendar';
+
+  void _onCalendarTap() {
+    final result = CustomInputController.instance.showWithResult(
+      InputType.calendar,
+      initialValue: CalendarHelper.stringToDateTime(_calendarInputText),
+    );
+    result.then((value) {
+      if (value is DateTime) {
+        setState(() {
+          _calendarInputText = CalendarHelper.dateTimeToString(value);
+        });
+      }
+    });
+  }
 
   void _onKeyboardTap() {
     final result = CustomInputController.instance.showWithResult(
       InputType.keyboard,
-      initialText: _keyboardInputText,
+      initialValue: _keyboardInputText,
     );
     result.then((value) {
       if (value is String) {
@@ -53,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onIntegerTap() {
     final result = CustomInputController.instance.showWithResult(
       InputType.integer,
-      initialText: _integerInputText,
+      initialValue: _integerInputText,
     );
     result.then((value) {
       if (value is String) {
@@ -67,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onFloatTap() {
     final result = CustomInputController.instance.showWithResult(
       InputType.float,
-      initialText: _floatInputText,
+      initialValue: _floatInputText,
     );
     result.then((value) {
       if (value is String) {
@@ -142,6 +157,27 @@ class _MyHomePageState extends State<MyHomePage> {
                           border: Border.all(color: Colors.black),
                         ),
                         child: Text(_floatInputText),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Row(children: [Text("calendar input")]),
+            SizedBox(
+              height: 50,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: _onCalendarTap,
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.black),
+                        ),
+                        child: Text(_calendarInputText),
                       ),
                     ),
                   ),

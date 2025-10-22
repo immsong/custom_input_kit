@@ -27,12 +27,10 @@ class _KeyboardWidgetState extends State<KeyboardWidget> {
   KeyboardType _keyboardType = KeyboardType.kor;
 
   /// 입력된 키 배열
-  final List<String> _inputChars = TextParser.toCharList(
-    CustomInputController.instance.initialText,
-  );
+  final List<String> _inputChars = [];
 
   /// 조합된 최종 텍스트
-  String _inputText = CustomInputController.instance.initialText;
+  String _inputText = '';
 
   /// 현재 눌린 키 (눌림 상태 표시를 위함)
   String _pressedKey = '';
@@ -54,6 +52,14 @@ class _KeyboardWidgetState extends State<KeyboardWidget> {
         _showCursor = !_showCursor;
       });
     });
+
+    if (CustomInputController.instance.initialValue is String) {
+      String initialValue =
+          CustomInputController.instance.initialValue as String;
+      _inputChars.addAll(TextParser.toCharList(initialValue));
+
+      _inputText = initialValue;
+    }
   }
 
   @override

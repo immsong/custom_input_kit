@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:custom_input_kit/src/controller/custom_input_controller.dart';
 import 'package:custom_input_kit/src/keyboard/keyboard_widget.dart';
 import 'package:custom_input_kit/src/number/number_widget.dart';
+import 'package:custom_input_kit/src/calendar/calendar_widget.dart';
 import 'package:custom_input_kit/src/models/input_type.dart';
 
 /// Custom Input Kit의 메인 위젯
@@ -85,6 +86,8 @@ class _CustomInputKitWidgetState extends State<CustomInputKitWidget> {
         return NumberWidget(isFloat: false);
       case InputType.float:
         return NumberWidget();
+      case InputType.calendar:
+        return CalendarWidget();
       // default:
       //   return const SizedBox.shrink();
     }
