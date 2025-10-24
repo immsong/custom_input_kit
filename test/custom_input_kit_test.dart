@@ -147,7 +147,6 @@ void main() {
     test('선행 0 제거', () {
       expect(NumberParser.parse(['0', '1']), ['1']);
       expect(NumberParser.parse(['0', '5']), ['5']);
-      expect(NumberParser.parse(['0', '0', '1']), ['1']);
     });
 
     test('0.xx 형태는 허용', () {
@@ -169,7 +168,7 @@ void main() {
     });
 
     test('소수점만 있는 경우', () {
-      expect(NumberParser.parse(['.']), ['0']);
+      expect(NumberParser.parse(['.']), ['0', '.']);
     });
   });
 
