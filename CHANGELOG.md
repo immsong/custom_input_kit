@@ -1,3 +1,9 @@
+## 0.3.0
+
+* Added calendar date picker support
+* Improved initialValue parameter to support DateTime type
+* **BREAKING CHANGE**: Renamed `initialText` parameter to `initialValue` in CustomInputController
+
 ## 0.2.0
 
 * Added integer number input support
